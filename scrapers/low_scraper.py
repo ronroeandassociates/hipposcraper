@@ -40,33 +40,29 @@ class LowScraper:
     def write_putchar(self):
         """Method to write/create holberton's `_putchar` if required"""
         if self.putchar_check == "_putchar":
-            w_putchar = open("_putchar.c", "w+")
-            w_putchar.write("#include <unistd.h>\n")
-            w_putchar.write("\n")
-            w_putchar.write("/**\n")
-            w_putchar.write(" * _putchar - writes the character c to stdout\n")
-            w_putchar.write(" * @c: The character to print\n")
-            w_putchar.write(" *\n")
-            w_putchar.write(" * Return: On success 1.\n")
-            w_putchar.write(" * On error, -1 is returned, and errno")
-            w_putchar.write(" is set appropriately.\n")
-            w_putchar.write(" */\n")
-            w_putchar.write("int _putchar(char c)\n")
-            w_putchar.write("{\n")
-            w_putchar.write("       return (write(1, &c, 1));\n")
-            w_putchar.write("}")
-            w_putchar.close()
+            with open("_putchar.c", "w+") as w_putchar:
+                w_putchar.write("#include <unistd.h>\n")
+                w_putchar.write("\n")
+                w_putchar.write("/**\n")
+                w_putchar.write(" * _putchar - writes the character c to stdout\n")
+                w_putchar.write(" * @c: The character to print\n")
+                w_putchar.write(" *\n")
+                w_putchar.write(" * Return: On success 1.\n")
+                w_putchar.write(" * On error, -1 is returned, and errno")
+                w_putchar.write(" is set appropriately.\n")
+                w_putchar.write(" */\n")
+                w_putchar.write("int _putchar(char c)\n")
+                w_putchar.write("{\n")
+                w_putchar.write("       return (write(1, &c, 1));\n")
+                w_putchar.write("}")
             print("created")
         else:
             print("not created")
 
     def find_prototypes(self):
         """Method to scrape for C prototypes"""
-        temp = []
         find_protos = self.soup.find_all(string=re.compile("Prototype: "))
-        for item in find_protos:
-            temp.append(item.next_sibling.text.replace(";", ""))
-        return temp
+        return [item.next_sibling.text.replace(";", "") for item in find_protos]
 
     def find_header(self):
         """Method to scrape for C header file name"""
@@ -80,15 +76,16 @@ class LowScraper:
 
     def write_header(self):
         """Method to write/create C header file if required"""
-        if self.header_check == 0:
-            # Making header include guard string
-            include_guard = self.header_name
-            include_guard = include_guard.replace('.', '_', 1)
-            include_guard = include_guard.upper()
+        if self.header_check != 0:
+            return
+        # Making header include guard string
+        include_guard = self.header_name
+        include_guard = include_guard.replace('.', '_', 1)
+        include_guard = include_guard.upper()
 
-            sys.stdout.write("  -> Creating header file... ")
-            try:
-                w_header = open(self.header_name, "w+")
+        sys.stdout.write("  -> Creating header file... ")
+        try:
+            with open(self.header_name, "w+") as w_header:
                 w_header.write('#ifndef %s\n' % include_guard)
                 w_header.write('#define %s\n' % include_guard)
                 w_header.write("\n")
@@ -110,13 +107,10 @@ class LowScraper:
                     n += 1
 
                 w_header.write("\n")
-                w_header.write('#endif /* %s */' % include_guard)
-                w_header.close()
-                print("done")
-            except AttributeError:
-                print("[ERROR] Failed to create header file")
-        else:
-            pass
+                w_header.write(f'#endif /* {include_guard} */')
+            print("done")
+        except AttributeError:
+            print("[ERROR] Failed to create header file")
 
     def find_files(self):
         """Method to scrape for C file names"""
@@ -132,9 +126,8 @@ class LowScraper:
         for item in self.file_names:
             file_text = item.next_sibling.text
             # Breaks incase more function names over file names
-            if self.prototypes_list != 0:
-                if (i == len(self.prototypes_list)):
-                    break
+            if self.prototypes_list != 0 and (i == len(self.prototypes_list)):
+                break
 
             try:
                 # Pulling out name of function for documentation

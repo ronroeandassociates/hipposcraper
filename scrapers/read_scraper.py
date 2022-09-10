@@ -130,11 +130,10 @@ class ReadScraper:
                 url = item['href']
                 name = item.text
                 if (url.startswith('/rltoken/')):
-                    url = 'https://intranet.hbtn.io'+ url
+                    url = f'https://intranet.hbtn.io{url}'
                 urls.append(url)
                 names.append(name)
-            links = [names, urls]
-            return links
+            return [names, urls]
         except AttributeError:
             print("[ERROR] Failed to scrape resources")
             sys.stdout.write("                         ... ")
@@ -145,7 +144,7 @@ class ReadScraper:
         try:
             if self.big_project_type == 1:
                 raise IOError
-            filename = self.dir_name + "/README.md"
+            filename = f"{self.dir_name}/README.md"
             self.readme = open(filename, "w+")
         except IOError:
             self.readme = open("README.md", "w")
@@ -153,7 +152,7 @@ class ReadScraper:
     def write_title(self):
         """Method that writes the title to README.md"""
         sys.stdout.write("  -> Writing project title... ")
-        self.readme.write("# {}\n".format(self.title))
+        self.readme.write(f"# {self.title}\n")
         self.readme.write("\n")
         print("done")
 
@@ -165,36 +164,42 @@ class ReadScraper:
         try:
             for item in self.prj_info:
                 if len(item) == 0:
-                    self.readme.write("{}\n".format(item.encode('utf-8')))
+                    self.readme.write(f"{item.encode('utf-8')}\n")
                     continue
-                self.readme.write("* {}\n".format(item.encode('utf-8')))
+                self.readme.write(f"* {item.encode('utf-8')}\n")
             print("done")
         except (AttributeError, IndexError, UnicodeEncodeError):
             print("\n     [ERROR] Failed to write learning objectives.")
-            pass
         self.readme.write("\n")
         self.readme.write("---\n")
 
     def write_tasks(self):
         """Method that writes the entire tasks to README.md"""
-        if (self.task_names is not None and self.file_names is not None and
-            self.task_info is not None):
-            sys.stdout.write("  -> Writing task information... ")
-            count = 0
-            while count < len(self.task_names):
-                try:
-                    self.readme.write("\n")
-                    self.readme.write("### [{}](./{})\n".format(
-                                      self.task_names[count], self.file_names[count]))
-                    self.readme.write("* {}\n".format(self.task_info[count]))
-                    self.readme.write("\n")
-                    count += 1
-                except IndexError:
-                    sys.stdout.write("\n     [ERROR] Could not write task {}... "
-                                     .format(self.task_names[count]))
-                    count += 1
-                    continue
-            print("done")
+        if (
+            self.task_names is None
+            or self.file_names is None
+            or self.task_info is None
+        ):
+            return
+        sys.stdout.write("  -> Writing task information... ")
+        count = 0
+        while count < len(self.task_names):
+            try:
+                self.readme.write("\n")
+                self.readme.write(
+                    f"### [{self.task_names[count]}](./{self.file_names[count]})\n"
+                )
+
+                self.readme.write(f"* {self.task_info[count]}\n")
+                self.readme.write("\n")
+                count += 1
+            except IndexError:
+                sys.stdout.write(
+                    f"\n     [ERROR] Could not write task {self.task_names[count]}... "
+                )
+
+                count += 1
+        print("done")
 
     def write_footer(self, author, user, git_link):
         """Method that writes the footer to README.md"""
@@ -202,9 +207,9 @@ class ReadScraper:
         self.readme.write("---\n")
         self.readme.write("\n")
         self.readme.write("## Author\n")
-        self.readme.write("* **{}** - ".format(author))
-        self.readme.write("[{}]".format(user))
-        self.readme.write("({})".format(git_link))
+        self.readme.write(f"* **{author}** - ")
+        self.readme.write(f"[{user}]")
+        self.readme.write(f"({git_link})")
         print("done")
 
     def write_rsc(self):
@@ -217,16 +222,15 @@ class ReadScraper:
             l = len(a[0])
             for idx in range(l):
                 if len(a[0][idx]) == 0:
-                    self.readme.write("{}".format(a[0][idx].encode('utf-8')))
-                    self.readme.write("{}\n".format(a[1][idx].encode('utf-8')))
+                    self.readme.write(f"{a[0][idx].encode('utf-8')}")
+                    self.readme.write(f"{a[1][idx].encode('utf-8')}\n")
                     continue
-                self.readme.write("* [{}]".format(a[0][idx].encode('utf-8')))
-                self.readme.write("({})\n".format(a[1][idx].encode('utf-8')))
+                self.readme.write(f"* [{a[0][idx].encode('utf-8')}]")
+                self.readme.write(f"({a[1][idx].encode('utf-8')})\n")
 
             print("done")
         except (AttributeError, IndexError, UnicodeEncodeError):
             print("\n     [ERROR] Failed to write resources.")
-            pass
         self.readme.write("\n")
         self.readme.write("---\n")
 

@@ -51,13 +51,12 @@ class TestFileScraper:
                         text = text.split("\n", 1)[1]
                         text = text.split(user, 1)[0]
                         text = text.split("\n")
-                    w_test_file = open(name, "w+")
-                    for i in range(len(text) - 1):
-                        if find_html != -1:
-                            w_test_file.write(text[i])
-                        else:
-                            w_test_file.write(text[i].encode('utf-8') + "\n")
-                    w_test_file.close()
+                    with open(name, "w+") as w_test_file:
+                        for i in range(len(text) - 1):
+                            if find_html != -1:
+                                w_test_file.write(text[i])
+                            else:
+                                w_test_file.write(text[i].encode('utf-8') + "\n")
                 except (AttributeError, IndexError):
                     newlines = 0
                     # Checks if test file's name has more than 1 newline
@@ -74,6 +73,4 @@ class TestFileScraper:
                 except IOError:
                     sys.stdout.write("\n     [ERROR] Could not create a specific test file.\n")
                     continue
-            else:
-                pass
         print("done")

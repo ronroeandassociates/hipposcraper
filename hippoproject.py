@@ -23,8 +23,7 @@ def get_args():
         print("[ERROR] Too few arguments (must be one)")
         sys.exit()
 
-    link = sys.argv[1]
-    return link
+    return sys.argv[1]
 
 def set_permissions():
     """Method that sets permissions on files"""

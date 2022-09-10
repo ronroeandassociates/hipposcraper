@@ -38,7 +38,7 @@ class BaseParse(object):
             value (str): comes from argv[1] as the project link
         """
         valid_link = "intranet.hbtn.io/projects"
-        while not (valid_link in value):
+        while valid_link not in value:
             print("[ERROR] Invalid link (must be to project on intranet.hbtn.io)")
             value = raw_input("Enter link to project: ")
         self.__htbn_link = value
@@ -50,7 +50,7 @@ class BaseParse(object):
         """
         super_path = os.path.dirname(os.path.abspath(__file__))
         try:
-            with open("{}/auth_data.json".format(super_path.rsplit("/", 1)[0]), "r") as json_file:
+            with open(f'{super_path.rsplit("/", 1)[0]}/auth_data.json', "r") as json_file:
                 return json.load(json_file)
         except IOError:
             print("[ERROR] Please run ./setup.sh to setup your auth data...")
@@ -94,8 +94,7 @@ class BaseParse(object):
         Sets project's directory's name to `dir_name`
         """
         find_dir = self.soup.find(string=re.compile("Directory: "))
-        find_dir_text = find_dir.next_element.text
-        return find_dir_text
+        return find_dir.next_element.text
 
     def create_directory(self):
         """Method that creates appropriate directory"""
@@ -117,5 +116,4 @@ class BaseParse(object):
             project (str): scraped project type
         """
         find_project = self.soup.find(string=re.compile("GitHub repository: "))
-        project = find_project.next_sibling.text
-        return project
+        return find_project.next_sibling.text

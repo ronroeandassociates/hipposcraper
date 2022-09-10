@@ -35,8 +35,6 @@ class HighScraper:
             find_py = py_proto.find(":")
             if find_py != 1:
                 res.append(py_proto)
-            else:
-                pass
         return res
 
     def find_files(self):
@@ -81,24 +79,19 @@ class HighScraper:
                 elif "." not in text_file and one_dir_check is not 1:
                     os.mkdir(text_file)
                 else:
-                    w_file_name = open(text_file, "w+")
-                    if ".py" in text_file:
-                        self.py_flag = 1
-                        w_file_name.write("#!/usr/bin/python3\n")
-                    elif ".sh" in text_file:
-                        w_file_name.write("#!/bin/bash\n")
-                    elif ".js" in text_file:
-                        self.js_flag = 1
-                        w_file_name.write("#!/usr/bin/node\n")
-                    else:
-                        pass
-                    # Creating prototypes in parallel with files
-                    if find_pyfile != -1:
-                        w_file_name.write(self.prototypes_list[file_idx])
-                        file_idx += 1
-                    else:
-                        pass
-                    w_file_name.close()
+                    with open(text_file, "w+") as w_file_name:
+                        if ".py" in text_file:
+                            self.py_flag = 1
+                            w_file_name.write("#!/usr/bin/python3\n")
+                        elif ".sh" in text_file:
+                            w_file_name.write("#!/bin/bash\n")
+                        elif ".js" in text_file:
+                            self.js_flag = 1
+                            w_file_name.write("#!/usr/bin/node\n")
+                                        # Creating prototypes in parallel with files
+                        if find_pyfile != -1:
+                            w_file_name.write(self.prototypes_list[file_idx])
+                            file_idx += 1
             except AttributeError:
                 sys.stdout.write("[ERROR] Failed to create ")
                 sys.stdout.write("task file %s\n" % text_file)
@@ -107,7 +100,6 @@ class HighScraper:
             except IOError:
                 sys.stdout.write("[ERROR] Failed to make file, passing\n")
                 sys.stdout.write("                        ... ")
-                pass
             except IndexError:
                 pass
 
